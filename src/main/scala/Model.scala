@@ -32,7 +32,7 @@ object Model {
   }
 
 
-  def tranfer(t: Transaction): Either[Error, Success] = {
+  def transfer(t: Transaction): Either[Error, Success] = {
     for {
       from <- getAccount(t.from)
       to <- getAccount(t.to)

@@ -41,7 +41,7 @@ object WebServer extends JsonSupport {
       } ~ path("transfer") {
         post {
           entity(as[Transaction]) { t =>
-            val message: Either[Error, Success] = Model.tranfer(t)
+            val message: Either[Error, Success] = Model.transfer(t)
             complete(message)
           }
         }
