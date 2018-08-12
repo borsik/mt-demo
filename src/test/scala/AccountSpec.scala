@@ -23,8 +23,8 @@ class AccountSpec extends FlatSpec with Matchers {
     val to = Model.addAccount("Erica Doe", 10)
     val transaction = Transaction(from.id, to.id, 100)
     Model.tranfer(transaction)
-    val nFrom = Model.getAccount(from.id).get
-    val nTo = Model.getAccount(to.id).get
+    val nFrom = Model.getAccount(from.id).right.get
+    val nTo = Model.getAccount(to.id).right.get
     assert(nFrom.amount == 300 && nTo.amount == 110)
   }
 }

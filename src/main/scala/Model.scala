@@ -17,23 +17,29 @@ object Model {
     }
   }
 
-  def isEnough(account: Account, amount: Double): Either[Error, Boolean] = {
-    if (account.amount <= amount)
-      Right(true)
+  def add(account: Account, amount: Double): Either[Error, Account] = {
+    if (amount < 0)
+      Left(Error("Transaction amount can't be negative"))
     else
-      Left(Error(s"Not enough funds"))
+      Right(account.copy(amount = account.amount + amount))
   }
+
+  def diff(account: Account, amount: Double): Either[Error, Account] = {
+    if (amount < 0 || account.amount < amount)
+      Left(Error("Transaction amount can't be negative or more than account amount"))
+    else
+      Right(account.copy(amount = account.amount - amount))
+  }
+
 
   def tranfer(t: Transaction): Either[Error, Success] = {
     for {
       from <- getAccount(t.from)
       to <- getAccount(t.to)
-      enough <- isEnough(from, t.amount)
-      if enough
+      nFrom <- diff(from, t.amount)
+      nTo <- add(to, t.amount)
     } yield {
-      val nFrom = from.copy(amount = from.amount - t.amount)
-      val nTo = to.copy(amount = to.amount + t.amount)
-      accountList.filter(a => a.id == t.from || a.id == t.to)
+      accountList = accountList.filterNot(a => a.id == t.from || a.id == t.to)
       accountList ::= nFrom
       accountList ::= nTo
       Success(s"Transaction from $nFrom to $nTo succeed")
