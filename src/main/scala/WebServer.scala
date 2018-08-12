@@ -12,6 +12,9 @@ import spray.json._
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val itemFormat: RootJsonFormat[Client] = jsonFormat2(Client)
   implicit val orderFormat: RootJsonFormat[Account] = jsonFormat3(Account)
+  implicit val errorFormat: RootJsonFormat[Error] = jsonFormat1(Error)
+  implicit val successFormat: RootJsonFormat[Success] = jsonFormat1(Success)
+  implicit val transactionFormat: RootJsonFormat[Transaction] = jsonFormat3(Transaction)
 }
 
 object WebServer extends JsonSupport {
@@ -33,6 +36,13 @@ object WebServer extends JsonSupport {
             val account = Model.addAccount(client.name, client.amount)
             complete(account)
 
+          }
+        }
+      } ~ path("transfer") {
+        post {
+          entity(as[Transaction]) { t =>
+            val message: Either[Error, Success] = Model.tranfer(t)
+            complete(message)
           }
         }
       }
