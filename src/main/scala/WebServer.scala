@@ -6,8 +6,15 @@ import akka.http.scaladsl.server.Directives._
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import spray.json._
 
-object WebServer {
+trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
+  implicit val itemFormat: RootJsonFormat[Client] = jsonFormat2(Client)
+  implicit val orderFormat: RootJsonFormat[Account] = jsonFormat3(Account)
+}
+
+object WebServer extends JsonSupport {
   def main(args: Array[String]) {
 
     implicit val system: ActorSystem = ActorSystem("my-system")
@@ -18,6 +25,15 @@ object WebServer {
       path("hello") {
         get {
           complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
+        }
+      } ~
+      path("create") {
+        post {
+          entity(as[Client]) { client =>
+            val account = Model.addAccount(client.name, client.amount)
+            complete(account)
+
+          }
         }
       }
 
