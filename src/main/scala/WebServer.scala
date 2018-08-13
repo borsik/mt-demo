@@ -9,6 +9,7 @@ import scala.io.StdIn
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json._
 
+
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val itemFormat: RootJsonFormat[Client] = jsonFormat2(Client)
   implicit val orderFormat: RootJsonFormat[Account] = jsonFormat3(Account)
@@ -20,7 +21,7 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 object WebServer extends JsonSupport {
   def main(args: Array[String]) {
 
-    implicit val system: ActorSystem = ActorSystem("my-system")
+    implicit val system: ActorSystem = ActorSystem("mt-demo")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
@@ -33,15 +34,14 @@ object WebServer extends JsonSupport {
       path("create") {
         post {
           entity(as[Client]) { client =>
-            val account = Model.addAccount(client.name, client.amount)
+            val account = Service.addAccount(client.name, client.amount)
             complete(account)
-
           }
         }
       } ~ path("transfer") {
         post {
           entity(as[Transaction]) { t =>
-            val message: Either[Error, Success] = Model.transfer(t)
+            val message: Either[Error, Success] = Service.transfer(t)
             complete(message)
           }
         }

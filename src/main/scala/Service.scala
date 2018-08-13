@@ -1,30 +1,31 @@
+import java.util.concurrent.atomic.AtomicReference
 
-object Model {
+object Service {
 
-  var accountList: List[Account] = List[Account]()
+  private val accounts = new AtomicReference(List[Account]())
 
   def addAccount(name: String, amount: Double = 0): Account = {
     val id = java.util.UUID.randomUUID().toString
     val account = Account(id, name, amount)
-    accountList ::= account
+    accounts.set(accounts.get() :+ account)
     account
   }
 
   def getAccount(id: String): Either[Error, Account] = {
-    accountList.find(a => a.id == id) match {
+    accounts.get().find(a => a.id == id) match {
       case Some(account) => Right(account)
       case None => Left(Error(s"Account $id not found"))
     }
   }
 
-  def add(account: Account, amount: Double): Either[Error, Account] = {
+  private def add(account: Account, amount: Double): Either[Error, Account] = {
     if (amount < 0)
       Left(Error("Transaction amount can't be negative"))
     else
       Right(account.copy(amount = account.amount + amount))
   }
 
-  def diff(account: Account, amount: Double): Either[Error, Account] = {
+  private def diff(account: Account, amount: Double): Either[Error, Account] = {
     if (amount < 0 || account.amount < amount)
       Left(Error("Transaction amount can't be negative or more than account amount"))
     else
@@ -39,9 +40,7 @@ object Model {
       nFrom <- diff(from, t.amount)
       nTo <- add(to, t.amount)
     } yield {
-      accountList = accountList.filterNot(a => a.id == t.from || a.id == t.to)
-      accountList ::= nFrom
-      accountList ::= nTo
+      accounts.set(accounts.get().filterNot(a => a.id == t.from || a.id == t.to) ++ List(nFrom, nTo))
       Success(s"Transaction from $nFrom to $nTo succeed")
     }
   }
