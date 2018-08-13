@@ -2,17 +2,17 @@ import java.util.concurrent.atomic.AtomicReference
 
 object Service {
 
-  private val accounts = new AtomicReference(List[Account]())
+  private val accounts = new AtomicReference(Map[String, Account]())
 
   def addAccount(name: String, amount: Double = 0): Account = {
     val id = java.util.UUID.randomUUID().toString
     val account = Account(id, name, amount)
-    accounts.set(accounts.get() :+ account)
+    accounts.set(accounts.get() + (id -> account))
     account
   }
 
   def getAccount(id: String): Either[Error, Account] = {
-    accounts.get().find(a => a.id == id) match {
+    accounts.get().get(id) match {
       case Some(account) => Right(account)
       case None => Left(Error(s"Account $id not found"))
     }
@@ -40,7 +40,7 @@ object Service {
       nFrom <- diff(from, t.amount)
       nTo <- add(to, t.amount)
     } yield {
-      accounts.set(accounts.get().filterNot(a => a.id == t.from || a.id == t.to) ++ List(nFrom, nTo))
+      accounts.set(accounts.get() + (nFrom.id -> nFrom, nTo.id -> nTo))
       Success(s"Transaction from $nFrom to $nTo succeed")
     }
   }
