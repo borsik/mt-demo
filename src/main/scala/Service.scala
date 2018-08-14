@@ -4,11 +4,15 @@ object Service {
 
   private val accounts = new AtomicReference(Map[String, Account]())
 
-  def addAccount(name: String, amount: Double = 0): Account = {
-    val id = java.util.UUID.randomUUID().toString
-    val account = Account(id, name, amount)
-    accounts.set(accounts.get() + (id -> account))
-    account
+  def addAccount(name: String, amount: Double = 0): Either[Error, Account] = {
+    if (amount < 0) {
+      Left(Error("Amount can't be negative"))
+    } else {
+      val id = java.util.UUID.randomUUID().toString
+      val account = Account(id, name, amount)
+      accounts.set(accounts.get() + (id -> account))
+      Right(account)
+    }
   }
 
   def getAccount(id: String): Either[Error, Account] = {

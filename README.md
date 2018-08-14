@@ -18,7 +18,12 @@ Response
         "amount": 200
     }
     
-    
+Error
+
+    {
+        "message": "Amount can't be negative"
+    }    
+
 ###POST /transfer
  
     {
