@@ -16,7 +16,7 @@ class AccountSpec extends FlatSpec with Matchers {
   it should "transfer" in {
     val from = Service.addAccount("Mike Doe", 400)
     val to = Service.addAccount("Erica Doe", 10)
-    val transaction = Transaction(from.id, to.id, 100)
+    val transaction = Transfer(from.id, to.id, 100)
     Service.transfer(transaction)
     val nFrom = Service.getAccount(from.id).right.get
     val nTo = Service.getAccount(to.id).right.get

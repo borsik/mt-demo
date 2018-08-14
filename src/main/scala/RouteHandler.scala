@@ -9,11 +9,10 @@ import spray.json._
 
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val itemFormat: RootJsonFormat[Client] = jsonFormat2(Client)
+  implicit val clientFormat: RootJsonFormat[Client] = jsonFormat2(Client)
   implicit val orderFormat: RootJsonFormat[Account] = jsonFormat3(Account)
   implicit val errorFormat: RootJsonFormat[Error] = jsonFormat1(Error)
-  implicit val successFormat: RootJsonFormat[Success] = jsonFormat1(Success)
-  implicit val transactionFormat: RootJsonFormat[Transaction] = jsonFormat3(Transaction)
+  implicit val transferFormat: RootJsonFormat[Transfer] = jsonFormat3(Transfer)
 }
 
 trait RouteHandler extends JsonSupport {
@@ -36,9 +35,9 @@ trait RouteHandler extends JsonSupport {
         }
       } ~ path("transfer") {
       post {
-        entity(as[Transaction]) { t =>
-          val message: Either[Error, Success] = Service.transfer(t)
-          complete(message)
+        entity(as[Transfer]) { t =>
+          val transfer: Either[Error, Transfer] = Service.transfer(t)
+          complete(transfer)
         }
       }
     }

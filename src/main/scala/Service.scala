@@ -33,7 +33,7 @@ object Service {
   }
 
 
-  def transfer(t: Transaction): Either[Error, Success] = {
+  def transfer(t: Transfer): Either[Error, Transfer] = {
     for {
       from <- getAccount(t.from)
       to <- getAccount(t.to)
@@ -41,7 +41,7 @@ object Service {
       nTo <- add(to, t.amount)
     } yield {
       accounts.set(accounts.get() + (nFrom.id -> nFrom, nTo.id -> nTo))
-      Success(s"Transaction from $nFrom to $nTo succeed")
+      t
     }
   }
 
