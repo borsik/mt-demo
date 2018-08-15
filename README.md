@@ -49,7 +49,7 @@ Response
         "amount": 200
     }
     
-Possible errors:
+#### Possible errors:
 
 Amount can't be negative
 
