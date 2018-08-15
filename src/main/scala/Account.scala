@@ -5,3 +5,5 @@ case class Client(name: String, amount: Double)
 case class Transfer(from: String, to: String, amount: Double)
 
 case class Error(message: String)
+
+case class Request(id: String)

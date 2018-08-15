@@ -31,7 +31,7 @@ object Service {
 
   private def diff(account: Account, amount: Double): Either[Error, Account] = {
     if (amount < 0 || account.amount < amount)
-      Left(Error("Transaction amount can't be negative or more than account amount"))
+      Left(Error("Transaction can't be negative or more than account balance"))
     else
       Right(account.copy(amount = account.amount - amount))
   }

@@ -4,7 +4,7 @@ Demo app for money transfer. Built with akka-http
 
 To run it execute `sbt/run` 
 
-###POST /create
+### POST /create
     {
         "name": "Jane Doe",
         "amount": 200
@@ -17,14 +17,9 @@ Response
         "name": "Jane Doe",
         "amount": 200
     }
-    
-Error
+     
 
-    {
-        "message": "Amount can't be negative"
-    }    
-
-###POST /transfer
+### POST /transfer
  
     {
         "from": "4a0b9978-a004-11e8-98d0-529269fb1459",
@@ -40,7 +35,15 @@ Response
         "amount": 200
     }
     
+Possible errors
 
+    {
+        "message": "Amount can't be negative"
+    }   
+    
+    {
+        "message": "Transaction can't be negative or more than account balance"
+    } 
 
  
  

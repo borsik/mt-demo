@@ -13,6 +13,7 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val orderFormat: RootJsonFormat[Account] = jsonFormat3(Account)
   implicit val errorFormat: RootJsonFormat[Error] = jsonFormat1(Error)
   implicit val transferFormat: RootJsonFormat[Transfer] = jsonFormat3(Transfer)
+  implicit val requestFormat: RootJsonFormat[Request] = jsonFormat1(Request)
 }
 
 trait RouteHandler extends JsonSupport {
@@ -21,24 +22,38 @@ trait RouteHandler extends JsonSupport {
 
 
   val route: Route =
-    path("hello") {
-      get {
-        complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
-      }
-    } ~
-      path("create") {
+      path("add") {
         post {
           entity(as[Client]) { client =>
             val account = Service.addAccount(client.name, client.amount)
-            complete(account)
+            val statusCode = account match {
+              case Left(_) => StatusCodes.BadRequest
+              case Right(_) => StatusCodes.OK
+            }
+            complete(statusCode, account)
           }
         }
       } ~ path("transfer") {
       post {
         entity(as[Transfer]) { t =>
           val transfer: Either[Error, Transfer] = Service.transfer(t)
-          complete(transfer)
+          val statusCode = transfer match {
+            case Left(_) => StatusCodes.BadRequest
+            case Right(_) => StatusCodes.OK
+          }
+          complete(statusCode, transfer)
         }
       }
-    }
+    } ~ path("get") {
+        post {
+          entity(as[Request]) { request =>
+            val account = Service.getAccount(request.id)
+            val statusCode = account match {
+              case Left(_) => StatusCodes.NotFound
+              case Right(_) => StatusCodes.OK
+            }
+            complete(statusCode, account)
+          }
+        }
+      }
 }
