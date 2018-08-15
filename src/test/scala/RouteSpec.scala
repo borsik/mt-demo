@@ -61,11 +61,7 @@ class RouteSpec extends FlatSpec with Matchers with ScalatestRouteTest with Rout
   it should "return account by get" in {
     val jackie = Service.addAccount("Jackie", 200).right.get
 
-    val json = s"""{
-                  |	"id": "${jackie.id}"
-                  |}""".stripMargin
-
-    createRequest("/get", json) ~> route ~> check {
+    Get(s"/account/${jackie.id}") ~> route ~> check {
       val account = responseAs[Account]
       account.id shouldEqual jackie.id
       account.name shouldEqual jackie.name

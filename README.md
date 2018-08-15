@@ -35,7 +35,7 @@ Response
         "amount": 200
     }
     
-### POST /get
+### GET /account/$id
 
     {
         "id": "4a0b9978-a004-11e8-98d0-529269fb1459"

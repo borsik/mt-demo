@@ -22,8 +22,8 @@ trait RouteHandler extends JsonSupport {
 
 
   val route: Route =
-      path("add") {
-        post {
+      post {
+        path("add") {
           entity(as[Client]) { client =>
             val account = Service.addAccount(client.name, client.amount)
             val statusCode = account match {
@@ -32,28 +32,26 @@ trait RouteHandler extends JsonSupport {
             }
             complete(statusCode, account)
           }
-        }
-      } ~ path("transfer") {
-      post {
-        entity(as[Transfer]) { t =>
-          val transfer: Either[Error, Transfer] = Service.transfer(t)
-          val statusCode = transfer match {
-            case Left(_) => StatusCodes.BadRequest
-            case Right(_) => StatusCodes.OK
-          }
-          complete(statusCode, transfer)
-        }
-      }
-    } ~ path("get") {
-        post {
-          entity(as[Request]) { request =>
-            val account = Service.getAccount(request.id)
-            val statusCode = account match {
-              case Left(_) => StatusCodes.NotFound
+        } ~
+        path("transfer") {
+          entity(as[Transfer]) { t =>
+            val transfer: Either[Error, Transfer] = Service.transfer(t)
+            val statusCode = transfer match {
+              case Left(_) => StatusCodes.BadRequest
               case Right(_) => StatusCodes.OK
             }
-            complete(statusCode, account)
+            complete(statusCode, transfer)
           }
+        }
+      } ~
+      get {
+        pathPrefix("account"/ JavaUUID) { id =>
+          val account = Service.getAccount(id.toString)
+          val statusCode = account match {
+            case Left(_) => StatusCodes.NotFound
+            case Right(_) => StatusCodes.OK
+          }
+          complete(statusCode, account)
         }
       }
 }
