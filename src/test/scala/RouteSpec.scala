@@ -14,7 +14,7 @@ class RouteSpec extends FlatSpec with Matchers with ScalatestRouteTest with Rout
   }
 
 
-  it should "return Account" in {
+  it should "return account by add" in {
     val json = """{
                  |	"name": "John Doe",
                  |	"amount": 200
@@ -58,7 +58,7 @@ class RouteSpec extends FlatSpec with Matchers with ScalatestRouteTest with Rout
     }
   }
 
-  it should "return client" in {
+  it should "return account by get" in {
     val jackie = Service.addAccount("Jackie", 200).right.get
 
     val json = s"""{

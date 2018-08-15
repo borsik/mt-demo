@@ -13,7 +13,7 @@ class AccountSpec extends FlatSpec with Matchers {
     assert(nAcc.exists(a => a.name == "Jane Doe" && a.amount == 300))
   }
 
-  it should "transfer" in {
+  it should "make transaction" in {
     val from = Service.addAccount("Mike Doe", 400).right.get
     val to = Service.addAccount("Erica Doe", 10).right.get
     val transaction = Transfer(from.id, to.id, 100)
